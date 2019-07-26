@@ -4,14 +4,29 @@
 START=80
 USE_PROCD=1
 bin="/usr/bin/udp2raw"
+confdir="/var/etc/udp2raw"
+
+confpath=""
+conf_make(){
+	mkdir -p "$confdir"
+	confpath="$confdir/$1.conf"
+	echo "# this conf generate by udp2raw.$1" >"$confpath"
+}
+conf_append(){
+	echo "$*" >>"$confpath"
+}
 
 start_udp2raw() {
 	local cfg="$1"
 	local first_opt="$2"
+	local confdir confpath
 	local localaddr remoteaddr mode key cipher auth disabled
 
 	config_get_bool disabled $cfg disabled
 	[ "$disabled" = 1 ] && return
+
+	conf_make "$cfg"
+
 	config_get localaddr $cfg localaddr
 	config_get remoteaddr $cfg remoteaddr
 	config_get mode $cfg mode
@@ -21,15 +36,15 @@ start_udp2raw() {
 	config_get_bool iptables $cfg iptables
 
 	procd_open_instance
-	procd_set_param command "$bin"
-	procd_append_param command "$first_opt"
-	[ -n "$localaddr" ] && procd_append_param command -l "$localaddr"
-	[ -n "$remoteaddr" ] && procd_append_param command -r "$remoteaddr"
-	[ -n "$mode" ] && procd_append_param command --raw-mode "$mode"
-	[ -n "$key" ] && procd_append_param command -k "$key"
-	[ -n "$cipher" ] && procd_append_param command --cipher-mode "$cipher"
-	[ -n "$auth" ] && procd_append_param command --auth-mode "$auth"
-	[ -n "$iptables" ] && procd_append_param command -a --keep-rule
+	procd_set_param command "$bin" --conf-file "$confpath"
+	conf_append "$first_opt"
+	[ -n "$localaddr" ] && conf_append -l "$localaddr"
+	[ -n "$remoteaddr" ] && conf_append -r "$remoteaddr"
+	[ -n "$mode" ] && conf_append --raw-mode "$mode"
+	[ -n "$key" ] && conf_append -k "$key"
+	[ -n "$cipher" ] && conf_append --cipher-mode "$cipher"
+	[ -n "$auth" ] && conf_append --auth-mode "$auth"
+	[ -n "$iptables" ] && conf_append -a --keep-rule
 	procd_close_instance
 }
 
