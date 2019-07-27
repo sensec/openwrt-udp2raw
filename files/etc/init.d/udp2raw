@@ -19,7 +19,7 @@ conf_append(){
 start_udp2raw() {
 	local cfg="$1"
 	local first_opt="$2"
-	local confdir confpath
+	local confpath
 	local localaddr remoteaddr mode key cipher auth disabled
 
 	config_get_bool disabled $cfg disabled
