@@ -1,0 +1,9 @@
+config client udp2raw_sample
+    option localaddr    '127.0.0.1:1000'
+    option remoteaddr   '8.8.8.8:1000'
+    option mode         'faketcp'
+    option key          'your_password'
+    option cipher       'xor'
+    option auth         'md5'
+    option iptables     '1'
+    option disabled     '1'

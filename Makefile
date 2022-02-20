@@ -8,14 +8,15 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=udp2raw-tunnel
-PKG_VERSION:=20180428.0
+PKG_VERSION:=20181113.0
 PKG_RELEASE:=1
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_URL:=https://github.com/wangyu-/udp2raw-tunnel.git
-PKG_SOURCE_VERSION:=2c2d897bc2140dbe77cea99f92942425632088e6
+PKG_SOURCE_VERSION:=0137dba1fd421ed1a61e7e913039833751e0446e
 PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION)-$(PKG_SOURCE_VERSION).tar.xz
+PKG_MIRROR_HASH:=9c0bbfdf610d37b01ce296934a074a3a5f6c908b6d7ed8ffa72e981c8d9be3c3
 
 PKG_LICENSE:=MIT
 PKG_LICENSE_FILES:=LICENSE
@@ -50,6 +51,10 @@ endef
 define Package/udp2raw-tunnel/install
 	$(INSTALL_DIR) $(1)/usr/bin
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/udp2raw_cross $(1)/usr/bin/udp2raw
+	$(INSTALL_DIR) $(1)/etc/config
+	$(INSTALL_DATA) ./files/etc/config/udp2raw $(1)/etc/config/udp2raw
+	$(INSTALL_DIR) $(1)/etc/init.d
+	$(INSTALL_BIN) ./files/etc/init.d/udp2raw $(1)/etc/init.d/udp2raw
 endef
 
 $(eval $(call BuildPackage,udp2raw-tunnel))
